@@ -11,6 +11,14 @@ export const addCategory = async (req, res) => {
                 message: "all field required"
             })
         }
+        const existingCategory = await Category.findOne({ name: { $regex: `^${name}$`, $options: 'i' } });
+        
+        if (existingCategory) {
+            return res.status(409).json({
+                status: false,
+                message: "Category name already exists"
+            });
+        }
 
         const newCategory = await Category.create({ name, image })
         return res.status(201).json({

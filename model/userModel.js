@@ -9,16 +9,19 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    number: {
+        type: String,
+    },
     password: {
         type: String,
         required: true
     },
     isAdmin: {
         type: Boolean,
-        default:false
+        default: false
     },
-    
-},{ timestamps: true })
+
+}, { timestamps: true })
 
 const User = mongoose.model("User", userSchema)
 export default User

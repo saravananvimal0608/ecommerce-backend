@@ -5,9 +5,9 @@ import jwt from "jsonwebtoken";
 
 export const login = async (req, res) => {
     try {
-        const { email, password } = req.body
+        const { email, password, number, isAdmin } = req.body
 
-        if (!email || !password) {
+        if (!email || !password, number) {
             return res.status(400).json({
                 status: false,
                 message: "please enter all fields"
@@ -38,6 +38,8 @@ export const login = async (req, res) => {
                 _id: user._id,
                 name: user.name,
                 email: user.email,
+                number: user.number,
+                isAdmin: user.isAdmin,
                 token
             },
         })
@@ -52,8 +54,8 @@ export const login = async (req, res) => {
 
 export const register = async (req, res) => {
     try {
-        const { name, email, password } = req.body
-        if (!email || !password || !name) {
+        const { name, email, password, number } = req.body
+        if (!email || !password || !name || !number) {
             return res.status(400).json({
                 status: false,
                 message: "please enter all fields"
@@ -66,7 +68,6 @@ export const register = async (req, res) => {
                 message: "email id already exist",
             })
         }
-
         // hashed password
         const salt = 10
         const hashedPassword = await bcrypt.hash(password, salt)
@@ -75,6 +76,7 @@ export const register = async (req, res) => {
         const newUser = await User.create({
             name,
             email,
+            number,
             password: hashedPassword,
         })
         // sending a data without password
@@ -124,7 +126,7 @@ export const deleteUser = async (req, res) => {
 export const updateUser = async (req, res) => {
     try {
         const { id } = req.params
-        const { name, email, password } = req.body
+        const { name, email, password, number } = req.body
 
         const user = await User.findById(id)
         if (!user) {
@@ -133,12 +135,22 @@ export const updateUser = async (req, res) => {
                 message: "user not found"
             })
         }
+        const mailId = await User.findOne({ email });
+        if (mailId && mailId._id.toString() !== id) {
+            return res.status(400).json({
+                status: false,
+                message: "Email ID already exists"
+            });
+        }
 
         if (name) {
             user.name = name
         }
         if (email) {
             user.email = email
+        }
+        if (number) {
+            user.number = number
         }
         if (password) {
             const hashedPassword = await bcrypt.hash(password, 10)
@@ -181,6 +193,36 @@ export const getAllUser = async (req, res) => {
         })
     } catch (error) {
         res.status(500).json({
+            status: false,
+            message: "internal server error",
+            error: error.message,
+            stack: error.stack
+        })
+    }
+}
+export const getSingleUser = async (req, res) => {
+    try {
+        const { id } = req.params
+        if (!id) {
+            return res.status(404).json({
+                status: false,
+                message: "id not found"
+            })
+        }
+        const data = await User.findById(id)
+        if (!id) {
+            return res.status(400).json({
+                status: false,
+                message: "ID not provided"
+            });
+        }
+        return res.status(200).json({
+            status: true,
+            message: "user fetched successfully",
+            data: data
+        })
+    } catch (error) {
+        return res.status(500).json({
             status: false,
             message: "internal server error",
             error: error.message,

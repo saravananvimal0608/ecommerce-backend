@@ -46,7 +46,7 @@ export const addProduct = async (req, res) => {
 }
 export const getAllProducts = async (req, res) => {
     try {
-        const product = await Product.find()
+        const product = await Product.find().populate("category", "name")
         if (!product) {
             res.status(404).json({
                 status: false,
@@ -92,6 +92,31 @@ export const getProductByCategory = async (req, res) => {
             message: "Internal Server Error",
             error: error.message
         });
+    }
+}
+export const getSingleProduct = async (req, res) => {
+    try {
+        const { productId } = req.params
+
+        const product = await Product.findById(productId).populate("category", "name")
+        if (!product) {
+            res.status(404).json({
+                status: false,
+                message: "product not found"
+            })
+        }
+        res.status(200).json({
+            status: true,
+            message: "product fetched successfully",
+            data: product
+        })
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            message: "internal server error",
+            error: error.message,
+            stack: error.stack
+        })
     }
 }
 export const updateProduct = async (req, res) => {
