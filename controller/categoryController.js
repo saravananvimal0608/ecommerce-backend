@@ -12,7 +12,7 @@ export const addCategory = async (req, res) => {
             })
         }
         const existingCategory = await Category.findOne({ name: { $regex: `^${name}$`, $options: 'i' } });
-        
+
         if (existingCategory) {
             return res.status(409).json({
                 status: false,
@@ -65,6 +65,10 @@ export const updateCategory = async (req, res) => {
         const name = req.body ? req.body.name : undefined;
         const image = req.file ? req.file.filename : undefined;
 
+        const existingName = await Category.findOne({ name, _id: { $ne: id } });
+        if (existingName) {
+            return res.status(404).json({ status: false, message: "category name already exist try another name" });
+        }
         const updatedData = {};
         if (name) updatedData.name = name;
         if (image) updatedData.image = image;

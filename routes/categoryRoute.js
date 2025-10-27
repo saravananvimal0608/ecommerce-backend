@@ -6,7 +6,7 @@ const router = express.Router()
 
 router.post('/add/category', upload.single("image"), addCategory)
 router.get('/getallcategory', getAllCategory)
-router.put('/update/:id', updateCategory)
+router.put('/update/:id', upload.single("image"), updateCategory)
 router.get('/:id', singleCategory)
 router.delete('/:id', deleteCategory)
 
