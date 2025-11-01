@@ -1,4 +1,6 @@
 import Category from '../model/categoryModel.js'
+import fs from "fs";
+import path from "path";
 
 export const addCategory = async (req, res) => {
     try {
@@ -57,18 +59,31 @@ export const getAllCategory = async (req, res) => {
 export const updateCategory = async (req, res) => {
     try {
         const { id } = req.params;
+        const { name } = req.body
+        const image = req.file ? req.file.filename : undefined;
 
-        if (!id) {
-            return res.status(404).json({ status: false, message: "Category not found" });
+        if (!name) {
+            return res.status(404).json({ status: false, message: "All Field Required" });
         }
 
-        const name = req.body ? req.body.name : undefined;
-        const image = req.file ? req.file.filename : undefined;
+        const existingCategory = await Category.findById(id);
+        if (!existingCategory) {
+            return res.status(404).json({ status: false, message: "Category not found" });
+        }
 
         const existingName = await Category.findOne({ name, _id: { $ne: id } });
         if (existingName) {
             return res.status(404).json({ status: false, message: "category name already exist try another name" });
         }
+        if (image) {
+            if (existingCategory.image) {
+                const oldImagePath = path.join("upload", existingCategory.image);
+                if (fs.existsSync(oldImagePath)) {
+                    fs.unlinkSync(oldImagePath);
+                }
+            }
+        }
+
         const updatedData = {};
         if (name) updatedData.name = name;
         if (image) updatedData.image = image;

@@ -1,11 +1,12 @@
 import User from '../model/userModel.js'
 import bcrypt from 'bcrypt'
 import jwt from "jsonwebtoken";
-
+import fs from "fs";
+import path from "path";
 
 export const login = async (req, res) => {
     try {
-        const { email, password, number, isAdmin } = req.body
+        const { email, password, number } = req.body
 
         if (!email || !password, number) {
             return res.status(400).json({
@@ -96,6 +97,45 @@ export const register = async (req, res) => {
         })
     }
 }
+
+export const uploadProfileImage = async (req, res) => {
+    try {
+        // user id coming from authmiddleware
+        const userId = req.user.id;
+        const image = req.file ? req.file.filename : null;
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ status: false, message: "User not found" });
+        }
+
+        if (image && user.profileImage) {
+            const oldImagePath = path.join("upload", user.profileImage);
+            if (fs.existsSync(oldImagePath)) {
+                fs.unlinkSync(oldImagePath);
+            }
+        }
+
+        // Save new image
+        if (image) user.profileImage = image;
+
+        await user.save();
+
+        return res.status(200).json({
+            status: true,
+            message: "Profile image uploaded successfully",
+            profileImage: user.profileImage,
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            status: false,
+            message: "Internal server error",
+            error: error.message,
+        });
+    }
+};
+
 
 export const deleteUser = async (req, res) => {
     try {

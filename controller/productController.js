@@ -1,6 +1,8 @@
 import Product from '../model/productModel.js'
 import Category from '../model/categoryModel.js'
 import mongoose from "mongoose";
+import fs from "fs";
+import path from "path";
 
 export const addProduct = async (req, res) => {
     try {
@@ -143,6 +145,12 @@ export const updateProduct = async (req, res) => {
                 message: "product not found",
             })
         }
+        if (!name, !description, !price, !category, !stock, !brand) {
+            return res.status(404).json({
+                status: false,
+                message: "All Fields Required",
+            })
+        }
         if (category) {
             const existingCategory = await Category.findById(category)
             if (!existingCategory) {
@@ -152,6 +160,18 @@ export const updateProduct = async (req, res) => {
                 })
             }
             existingProduct.category = category
+
+
+            //  Remove old image if new one uploaded
+            if (image) {
+                if (existingProduct.image) {
+                    const oldImagePath = path.join("upload", existingProduct.image);
+                    if (fs.existsSync(oldImagePath)) {
+                        fs.unlinkSync(oldImagePath);
+                    }
+                }
+                existingProduct.image = image;
+            }
         }
         if (name) existingProduct.name = name;
         if (description) existingProduct.description = description;
