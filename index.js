@@ -6,6 +6,7 @@ import categoryRoute from './routes/categoryRoute.js'
 import cors from 'cors'
 import productRoute from "./routes/productRoute.js"
 import cartRoute from './routes/cartRoute.js'
+import addressRoute from './routes/addressRoute.js'
 
 dotenv.config()
 connectDB()
@@ -17,6 +18,7 @@ app.use('/user', userRoute)
 app.use('/category', categoryRoute)
 app.use('/product', productRoute)
 app.use('/cart', cartRoute)
+app.use('/address', addressRoute)
 app.use("/upload", express.static("upload"));
 app.get("/", (req, res) => {
     res.send("express working")

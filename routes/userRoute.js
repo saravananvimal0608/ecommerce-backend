@@ -6,10 +6,10 @@ const router = express.Router()
 
 router.post('/register', register)
 router.post('/login', login)
-router.delete('/delete/:id', deleteUser)
+router.delete('/delete/:id', authMiddleware, deleteUser)
 router.put('/updateimage', authMiddleware, upload.single("image"), uploadProfileImage)
-router.put("/update/:id", updateUser)
+router.put("/update/:id", authMiddleware, updateUser)
 router.get('/', getAllUser)
-router.get('/getsingleuser/:id', getSingleUser)
+router.get('/getsingleuser/:id', authMiddleware, getSingleUser)
 
 export default router
