@@ -24,14 +24,6 @@ export const addProduct = async (req, res) => {
             });
         }
 
-        const existingProduct = await Product.findOne({ name });
-        if (existingProduct) {
-            return res.status(400).json({
-                status: false,
-                message: "Product name already exists",
-            });
-        }
-
         const product = await Product.create({
             name,
             description,
