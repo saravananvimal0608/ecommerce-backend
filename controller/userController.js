@@ -102,7 +102,7 @@ export const uploadProfileImage = async (req, res) => {
     try {
         // user id coming from authmiddleware
         const userId = req.user.id;
-        const image = req.file ? req.file.filename : null;
+        const image = req.file ?  req.file?.path : null;
 
         const user = await User.findById(userId);
         if (!user) {

@@ -7,7 +7,7 @@ import path from "path";
 export const addProduct = async (req, res) => {
     try {
         const { name, description, price, category, stock, brand } = req.body;
-        const image = req.file ? req.file.filename : null;
+        const image = req.file ? req.file?.path  : null;
 
         if (!name || !description || !price || !category || !stock || !brand || !image) {
             return res.status(400).json({
@@ -128,7 +128,7 @@ export const updateProduct = async (req, res) => {
         const { productId } = req.params
 
         const { name, description, price, category, stock, brand } = req.body
-        const image = req.file ? req.file.filename : null
+        const image = req.file ? req.file?.path : null
 
         const existingProduct = await Product.findById(productId)
         if (!existingProduct) {

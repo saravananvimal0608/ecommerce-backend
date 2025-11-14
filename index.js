@@ -19,7 +19,7 @@ app.use('/category', categoryRoute)
 app.use('/product', productRoute)
 app.use('/cart', cartRoute)
 app.use('/address', addressRoute)
-app.use("/upload", express.static("upload"));
+// app.use("/upload", express.static("upload"));
 app.get("/", (req, res) => {
     res.send("express working")
 })

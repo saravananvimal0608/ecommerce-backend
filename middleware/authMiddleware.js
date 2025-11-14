@@ -4,8 +4,9 @@ import User from "../model/userModel.js";
 export const authMiddleware = async (req, res, next) => {
     try {
         let token = req.headers.authorization;
+        console.log(token);
 
-        if (!token || !token.startsWith("Bearer ")) {
+        if (!token || !token.startsWith("Bearer")) {
             return res.status(401).json({ message: "Not authorized, no token" });
         }
 

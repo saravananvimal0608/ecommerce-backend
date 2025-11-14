@@ -5,7 +5,7 @@ import path from "path";
 export const addCategory = async (req, res) => {
     try {
         const { name } = req.body
-        const image = req.file ? req.file.filename : null;
+        const image = req.file ?  req.file?.path : null;
 
         if (!name) {
             return res.status(400).json({
@@ -60,7 +60,7 @@ export const updateCategory = async (req, res) => {
     try {
         const { id } = req.params;
         const { name } = req.body
-        const image = req.file ? req.file.filename : undefined;
+        const image = req.file ?  req.file?.path : undefined;
 
         if (!name) {
             return res.status(404).json({ status: false, message: "All Field Required" });
